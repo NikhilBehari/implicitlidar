@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "Task-Driven Implicit Representations for Automated Design of LiDAR Systems"
+authors:
+  - family-names: "Behari"
+    given-names: "Nikhil"
+    affiliation: "Massachusetts Institute of Technology"
+  - family-names: "Young"
+    given-names: "Aaron"
+    affiliation: "Massachusetts Institute of Technology"
+  - family-names: "Klinghoffer"
+    given-names: "Tzofi"
+    affiliation: "Massachusetts Institute of Technology"
+  - family-names: "Dave"
+    given-names: "Akshat"
+    affiliation: "Stony Brook University"
+  - family-names: "Raskar"
+    given-names: "Ramesh"
+    affiliation: "Massachusetts Institute of Technology"
+preferred-citation:
+  type: conference-paper
+  title: "Task-Driven Implicit Representations for Automated Design of LiDAR Systems"
+  authors:
+    - family-names: "Behari"
+      given-names: "Nikhil"
+    - family-names: "Young"
+      given-names: "Aaron"
+    - family-names: "Klinghoffer"
+      given-names: "Tzofi"
+    - family-names: "Dave"
+      given-names: "Akshat"
+    - family-names: "Raskar"
+      given-names: "Ramesh"
+  conference:
+    name: "IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)"
+  year: 2026
+  url: "https://nikhilbehari.github.io/implicitlidar"

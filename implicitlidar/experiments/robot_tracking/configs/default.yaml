@@ -1,0 +1,73 @@
+# Robot end-effector tracking — distributed ceiling-mounted LiDAR design.
+#
+# Trains an implicit density over the 6D LiDAR design space for tracking the
+# end-effector of a 7-DoF KUKA IIWA arm performing randomized pick-and-place
+# trajectories, with sensors constrained to a ceiling plane (z = 1 m). The
+# synthesized configuration represents a *distributed* LiDAR system (multiple
+# sensors with learnable origin covariances).
+
+design_space:
+  # Sensors anywhere in [-1, 1]² horizontally on the ceiling (z = 1 m); full
+  # azimuth; downward-looking elevation [-π/2, 0]; max ToF 2 m.
+  low:  [-1.0, -1.0, 1.0, 0.0,  -1.57, 0.1]
+  high: [ 1.0,  1.0, 1.0, 6.28,  0.0,  2.0]
+
+target:
+  sigma: 0.025
+  use_visibility: false
+  visibility_num_samples: 16
+  visibility_beta: 100.0
+  visibility_weight: 1.0
+
+scene:
+  # The 'sphere' source places small sphere SDFs at every end-effector pose
+  # along sampled pick-and-place trajectories.
+  source: sphere
+  num_trajectories: 20
+  trajectory_variance: [0.1, 0.1]
+  steps_per_segment: 10
+  sphere_radius: 0.02
+  seed: 42
+  occluder: null
+
+flow:
+  num_layers: 8
+  circular_dims: [3, 4]
+  spline:
+    num_blocks: 2
+    hidden_channels: 64
+    num_bins: 16
+    tail_bound_multiplier: 1.0
+    activation: ReLU
+    dropout: 0.05
+    permute_mask: true
+    init_identity: true
+
+training:
+  iterations: 5000
+  batch_size: 1024
+  learning_rate: 0.001
+  entropy_reg: 0.5
+  visibility_warmup_iters: 1000
+
+synthesis:
+  # Distributed system: each Gaussian component has a full 3×3 origin
+  # covariance, constrained to a thin slab (0.1 m thickness) so sensors form
+  # localized patches on the ceiling.
+  n_components: 4
+  origin_mode: full
+  max_origin_thickness: 0.1
+  em_max_iter: 400
+  em_seed: 0
+  flow_samples: 8192
+
+evaluation:
+  num_test_trajectories: 40
+  test_seed: 1000
+  ray_budgets: [300, 400, 500, 600, 700, 800, 900, 1000,
+                1100, 1200, 1300, 1400, 1500]
+
+output:
+  run_dir: outputs/runs/robot_tracking/default
+  log_every: 100
+  save_every: 1000

@@ -1,0 +1,66 @@
+<scene version="3.3.0">
+    <default name="res" value="100"/>
+    <default name="temporal_bins" value="400"/>
+    <default name="integrator" value="transient_path"/>
+
+    <!-- Transient Integrator -->
+    <integrator type="$integrator">
+        <boolean name="camera_unwarp" value="false"/>
+        <integer name="max_depth" value="8"/>
+        <string name="temporal_filter" value="box"/>
+        <float name="gaussian_stddev" value="2.0"/>
+    </integrator>
+
+    <!-- Perspective Sensor -->
+    <sensor type="perspective" id="sensor">
+        <string name="fov_axis" value="smaller"/>
+        <float name="fov" value="39.3077"/>
+        <transform name="to_world">
+            <lookat origin="3, 0, 0"
+                    target="0, 0, 0"
+                    up="0, 1, 0"/>
+        </transform>
+        <sampler type="independent">
+            <integer name="sample_count" value="1"/>
+        </sampler>
+        <film type="transient_hdr_film">
+            <integer name="width" value="$res"/>
+            <integer name="height" value="$res"/>
+            <integer name="temporal_bins" value="$temporal_bins"/>
+            <float   name="start_opl" value="0"/>
+            <float   name="bin_width_opl" value="6.5"/>
+            <rfilter type="box"/>
+        </film>
+    </sensor>
+
+    <!-- Flood‐illumination LiDAR using a projector emitter -->
+    <emitter type="projector" id="lidar_flood">
+        <texture name="irradiance" type="checkerboard">
+            <rgb name="color0" value="1.0, 1.0, 1.0"/>
+            <rgb name="color1" value="1.0, 1.0, 1.0"/>
+        </texture>
+        <float name="scale" value="2.0"/>
+        <float name="fov" value="10"/>
+        <string name="fov_axis" value="smaller"/>
+        <transform name="to_world">
+            <lookat origin="3, 0, 0"
+                    target="0, 0, 0"
+                    up="0, 1, 0"/>
+        </transform>
+    </emitter>
+
+    <!-- Material for your object -->
+    <bsdf type="diffuse" id="gray">
+        <rgb name="reflectance" value="1.0, 1.0, 1.0"/>
+    </bsdf>
+
+    <!-- Your custom object at the origin -->
+    <shape type="obj" id="user_object">
+        <string name="filename" value="meshes/heads/head_0.obj"/>
+        <ref id="gray"/>
+        <transform name="to_world">
+            <rotate x="1" y="0" z="0" angle="-90"/>
+            <translate x="0" y="0" z="0"/>
+        </transform>
+    </shape>
+</scene>

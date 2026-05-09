@@ -1,0 +1,26 @@
+# Pinned base dependencies for implicitlidar.
+# For installation use: pip install -e .  (uses pyproject.toml)
+# This file mirrors the base requirements; per-experiment extras live in
+# pyproject.toml under [project.optional-dependencies].
+
+# Core ML
+torch>=2.1
+numpy>=1.24,<3.0
+scipy>=1.10
+
+# Normalizing flows
+normflows>=1.7
+
+# Mesh / SDF utilities
+trimesh>=4.0
+pytorch_volumetric>=0.6
+mesh2sdf>=1.1
+open3d>=0.17
+rtree>=1.0
+shapely>=2.0
+
+# I/O
+h5py>=3.8
+pandas>=2.0
+pyyaml>=6.0
+tqdm>=4.65

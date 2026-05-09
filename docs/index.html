@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Task-Driven Implicit Representations for Automated Design of LiDAR Systems</title>
+    <meta property="og:title" content="Task-Driven Implicit Representations for Automated Design of LiDAR Systems">
+    <meta property="og:description" content="Automated, task-driven LiDAR system design via implicit densities over a 6D design space. CVPR 2026.">
+    <meta property="og:image" content="images/teaser.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Task-Driven Implicit Representations for Automated Design of LiDAR Systems">
+    <meta name="twitter:description" content="Automated, task-driven LiDAR system design via implicit densities over a 6D design space. CVPR 2026.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+
+    <div class="paper-title">
+        <h1 class="main-title">Task-Driven Implicit Representations for Automated Design of LiDAR Systems</h1>
+        <h3 class="venue">CVPR 2026 (Highlight)</h3>
+    </div>
+
+    <div id="authors">
+        <div class="author-row">
+            <div class="col-5 text-center"><a href="https://nikhilbehari.github.io" target="_blank">Nikhil<br><span class="lastname">Behari<sup>1</sup></span></a></div>
+            <div class="col-5 text-center">Aaron<br><span class="lastname">Young<sup>1</sup></span></div>
+            <div class="col-5 text-center">Tzofi<br><span class="lastname">Klinghoffer<sup>1</sup></span></div>
+            <div class="col-5 text-center">Akshat<br><span class="lastname">Dave<sup>1,2</sup></span></div>
+            <div class="col-5 text-center"><a href="https://www.media.mit.edu/people/raskar/overview/" target="_blank">Ramesh<br><span class="lastname">Raskar<sup>1</sup></span></a></div>
+        </div>
+        <div class="affil-row">
+            <div class="text-center">
+                <sup>1</sup>Massachusetts Institute of Technology &nbsp;&nbsp; <sup>2</sup>Stony Brook University
+            </div>
+        </div>
+    </div>
+
+    <div style="clear: both">
+        <div class="paper-btn-parent">
+            <a class="paper-btn" href="#" target="_blank">Paper</a>
+            <a class="paper-btn" href="https://github.com/NikhilBehari/implicitlidar" target="_blank">Code</a>
+        </div>
+    </div>
+
+    <section id="teaser">
+        <figure style="width: 100%;">
+            <a href="images/teaser.png">
+                <img style="width: 100%;" src="images/teaser.png" alt="Implicit LiDAR teaser">
+            </a>
+            <p class="caption_justify">
+                <b>Automated, task-driven LiDAR system design under arbitrary constraints.</b>
+                We represent LiDAR configurations in a continuous <span class="implicit">6D design
+                space</span> <span class="eq">(x, y, z, &#966;, &#968;, &#964;)</span> and learn task-specific
+                implicit densities over this space via flow-based generative modeling. New LiDAR
+                systems are then synthesized by modeling sensors as parametric distributions in
+                6D and fitting them to the learned density via expectation–maximization.
+            </p>
+        </figure>
+    </section>
+
+    <section id="abstract">
+        <h2>Abstract</h2>
+        <hr>
+        <p>
+            LiDAR system design, choosing how many sensors to use, where to place them, what
+            field of view they should have, and how to time-gate their detectors, is a complex,
+            largely manual process. We present a framework for
+            <span class="implicit">automated, task-driven LiDAR system design under arbitrary
+            constraints</span>. Each LiDAR configuration is represented as a point in a continuous
+            6D design space, and a task-specific implicit density over this space is learned with
+            a normalizing flow. New LiDAR systems are then synthesized by modeling sensors as
+            parametric distributions in 6D and fitting these distributions to the learned implicit
+            density via expectation–maximization. We demonstrate the framework across face
+            scanning, distributed end-effector tracking on a 7-DoF robot arm, motion-adaptive
+            warehouse object detection, constraint-aware emitter design with full Mitsuba 3
+            transient evaluation, and a real-world single-photon LiDAR mesh-reconstruction demo.
+        </p>
+    </section>
+
+    <section id="method">
+        <h2>Method</h2>
+        <hr>
+        <p>
+            We parameterize each LiDAR design as a point <span class="eq">d = (x, y, z, &#966;, &#968;, &#964;)</span>
+            in a continuous 6D space (origin, azimuth, elevation, time-of-flight). The
+            <span class="implicit">task-driven implicit density</span> places mass on design
+            points whose scene point <span class="eq">s = x + &#964;&#183;v(&#966;, &#968;)</span>
+            lies on a surface of interest and whose line-of-sight is unoccluded. We fit this
+            density with an autoregressive rational-quadratic spline normalizing flow, and
+            synthesize concrete LiDAR systems by EM-fitting a mixture of parametric 6D sensor
+            distributions to samples from the learned density. Hard constraints (fixed
+            positions, capped FoVs, bounded time gates) are applied as projections inside
+            the EM loop, so constraint satisfaction is exact.
+        </p>
+        <figure style="width: 100%;">
+            <a href="images/method_density.png">
+                <img style="width: 100%;" src="images/method_density.png" alt="Implicit LiDAR density visualization">
+            </a>
+            <p class="caption_justify">
+                <b>The learned implicit LiDAR density</b> visualized over the parameter domain
+                <span class="eq">(x &#8712; [0, 1], &#966; &#8712; [&#960;/4, 3&#960;/4], &#964; &#8712; [0, 1.2])</span>
+                for a class of 2D scenes. High-density points are exactly the LiDAR designs
+                most informative for the task.
+            </p>
+        </figure>
+    </section>
+
+    <section id="results">
+        <h2>Selected results</h2>
+        <hr>
+
+        <figure style="width: 100%;">
+            <a href="images/face_scanning.png">
+                <img style="width: 100%;" src="images/face_scanning.png" alt="Face scanning sensor designs">
+            </a>
+            <p class="caption_justify">
+                <b>Face scanning.</b> Automatically synthesized smartphone
+                flash-LiDAR sensor designs adapt to fine facial geometry, allocating coverage
+                to key regions (e.g. a dedicated nose sensor in the 10-sensor configuration)
+                and reallocating per-sensor sampling under fixed ray budgets. Compared to
+                uniform baselines, our designs reduce bandwidth by 6&#215; at matched
+                reconstruction quality.
+            </p>
+        </figure>
+
+        <figure style="width: 100%;">
+            <a href="images/robot_tracking.png">
+                <img style="width: 100%;" src="images/robot_tracking.png" alt="Distributed LiDAR for end-effector tracking">
+            </a>
+            <p class="caption_justify">
+                <b>Distributed end-effector tracking.</b> The framework jointly
+                balances sensor counts, ceiling placements, FoV, and time gating to enable
+                7-DoF arm tracking under arbitrary classes of pick-and-place motion.
+                Modeling view-dependent occlusion via the visibility term yields strictly
+                better designs.
+            </p>
+        </figure>
+
+        <figure style="width: 100%;">
+            <a href="images/real_world.png">
+                <img style="width: 100%;" src="images/real_world.png" alt="Real-world single-photon LiDAR mesh reconstruction">
+            </a>
+            <p class="caption_justify">
+                <b>Real-world single-photon LiDAR.</b> The same designs synthesized
+                in face_scanning, scanned on physical hardware (Micro Photon Devices SPAD with a
+                pulsed laser and two-axis galvanometer scanner). Our learned designs yield
+                denser surface coverage, recover finer facial details, and suppress
+                noise-induced depth discontinuities relative to the uniform scanning baseline.
+            </p>
+        </figure>
+    </section>
+
+    <section id="experiments">
+        <h2>Experiments and code</h2>
+        <hr>
+        <p>
+            Open-source release at
+            <a href="https://github.com/NikhilBehari/implicitlidar" target="_blank">NikhilBehari/implicitlidar</a>.
+            Every experiment runs the same pipeline, driven from a YAML config:
+            <code>prepare</code> (where applicable) &rarr; <code>train</code> &rarr; <code>synthesize</code> &rarr; <code>evaluate</code>.
+        </p>
+        <table class="expt-table">
+            <thead>
+                <tr><th>Experiment</th><th>Task</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>face_scanning</code></td>
+                    <td>Smartphone flash-LiDAR design for 3D face mesh reconstruction (Basel Face Model).</td>
+                </tr>
+                <tr>
+                    <td><code>robot_tracking</code></td>
+                    <td>Distributed ceiling-mounted LiDAR design for end-effector tracking (KUKA IIWA in MuJoCo); a paired config toggles the visibility term for the occlusion ablation.</td>
+                </tr>
+                <tr>
+                    <td><code>warehouse_detection</code></td>
+                    <td>Motion-adaptive scanning design for warehouse object detection.</td>
+                </tr>
+                <tr>
+                    <td><code>emitter_design</code></td>
+                    <td>Constraint-aware emitter synthesis for a fixed detector, evaluated by Mitsuba 3 transient rendering.</td>
+                </tr>
+                <tr>
+                    <td><code>real_world</code></td>
+                    <td>Real single-photon LiDAR mesh reconstruction using designs synthesized in <code>face_scanning</code>.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="bibtex">
+        <h2>Citation</h2>
+        <hr>
+        <pre>@inproceedings{behari2026implicitlidar,
+  title     = {Task-Driven Implicit Representations for Automated Design of LiDAR Systems},
+  author    = {Behari, Nikhil and Young, Aaron and Klinghoffer, Tzofi and Dave, Akshat and Raskar, Ramesh},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2026},
+}</pre>
+    </section>
+
+</div>
+</body>
+</html>

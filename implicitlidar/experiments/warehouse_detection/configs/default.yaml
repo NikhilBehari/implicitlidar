@@ -1,0 +1,70 @@
+# Warehouse object detection — motion-adaptive scanning for a ground robot.
+#
+# Trains an implicit density over a 6D LiDAR design space conditioned on
+# robot motion (x ∈ [0, X]) for a ground robot scanning warehouse shelves
+# with motion-adaptive timing. Synthesizes single-ray scanning sensors at
+# each x position and evaluates box-detection miss rate.
+
+design_space:
+  # Robot moves along x ∈ [-0.5, 4.0]; sensor at y = z = 0; fixed downward
+  # azimuth (-π/2); elevation sweeps the full upper hemisphere [0, π].
+  low:  [-0.5, 0.0, 0.0, -1.57, 0.0,  0.1]
+  high: [ 4.0, 0.0, 0.0, -1.57, 3.14, 5.0]
+
+target:
+  sigma: 0.04
+  use_visibility: true
+  visibility_num_samples: 32
+  visibility_beta: 100.0
+  visibility_weight: 1.0
+
+scene:
+  source: outputs/data/warehouse/target
+  occluder: outputs/data/warehouse/occluder
+  # Optional GPU voxel-SDF cache. Resolution should be << surface-proximity
+  # sigma to keep the approximation imperceptible (sigma=0.04 m here).
+  cache_resolution: 0.01
+
+flow:
+  num_layers: 8
+  circular_dims: [3, 4]
+  spline:
+    num_blocks: 2
+    hidden_channels: 128
+    num_bins: 16
+    tail_bound_multiplier: 1.0
+    activation: ReLU
+    dropout: 0.05
+    permute_mask: true
+    init_identity: true
+
+training:
+  iterations: 5000
+  batch_size: 4096
+  learning_rate: 0.001
+  entropy_reg: 0.5
+  visibility_warmup_iters: 0
+
+synthesis:
+  # In motion-adaptive mode each Gaussian represents a single ray with a
+  # learned elevation and time gate. The design space is partitioned by
+  # robot position x into bins, and the mixture is fit per-bin.
+  rays_per_position: 10
+  query_positions: [0.0, 1.2, 2.4, 3.6]
+  position_window: 0.1
+  origin_mode: fixed
+  em_max_iter: 200
+  em_seed: 0
+  flow_samples: 8192
+
+evaluation:
+  # Held-out front-plane test scenes are generated procedurally with a
+  # different seed from the training scenes (= 2 × train_seed).
+  n_test_scenes: 40
+  test_seed: 84
+  shelf_spacing_x: 0.2
+
+output:
+  run_dir: outputs/runs/warehouse_detection/default
+  log_every: 100
+  save_every: 1000

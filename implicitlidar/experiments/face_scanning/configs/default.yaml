@@ -1,0 +1,68 @@
+# Face scanning — smartphone flash-LiDAR design for 3D mesh reconstruction.
+#
+# Trains an implicit density over the 6D LiDAR design space for a smartphone
+# flash-LiDAR scanning a face, then synthesizes a small number of sensors and
+# evaluates Chamfer-distance reconstruction quality on a held-out face set.
+
+design_space:
+  # Sensor at (3 m, 0, 0) facing the face; azimuth ∈ [3π/4, 5π/4]
+  # (180° FoV toward −x), elevation ∈ [−π/4, π/4], τ ∈ [0.1, 5] m.
+  low:  [3.0, 0.0, 0.0, 2.356, -0.785, 0.1]
+  high: [3.0, 0.0, 0.0, 3.927,  0.785, 5.0]
+
+target:
+  sigma: 0.075
+  use_visibility: true
+  visibility_num_samples: 64
+  visibility_beta: 100.0
+  visibility_weight: 1.0
+
+scene:
+  source: outputs/data/faces/train
+  # Optional GPU voxel-SDF cache (pv.CachedSDF) for fast visibility-integral
+  # training. Resolution should be << surface-proximity sigma to keep the
+  # approximation imperceptible (sigma=0.075 m here). Set to null to fall
+  # back to the exact (CPU) MeshSDF — numerically identical, ~10x slower.
+  cache_resolution: 0.01
+
+flow:
+  num_layers: 6
+  circular_dims: [3, 4]
+  spline:
+    num_blocks: 2
+    hidden_channels: 64
+    num_bins: 16
+    tail_bound_multiplier: 1.0
+    activation: ReLU
+    dropout: 0.05
+    permute_mask: true
+    init_identity: true
+
+training:
+  # Loss plateaus by ~1000 iters; 2000 leaves comfortable margin. Set
+  # higher (e.g. 10000) for the most polished result.
+  iterations: 2000
+  batch_size: 2048
+  learning_rate: 0.001
+  entropy_reg: 0.75
+  visibility_warmup_iters: null
+
+synthesis:
+  # Default to a 4-sensor design; override on the CLI for the 2-sensor and 10-sensor variants.
+  n_components: 4
+  origin_mode: fixed
+  fixed_origin: [3.0, 0.0, 0.0]
+  em_max_iter: 200
+  em_seed: 0
+  flow_samples: 4096
+
+evaluation:
+  test_scene: outputs/data/faces/test
+  # Ray budgets swept by the evaluator (Chamfer distance reported in mm).
+  ray_budgets: [25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256,
+                289, 324, 361, 400, 441, 484, 529, 576]
+
+output:
+  run_dir: outputs/runs/face_scanning/default
+  log_every: 100
+  save_every: 1000

@@ -1,0 +1,67 @@
+# Emitter design: constraint-aware emitter synthesis for a fixed detector.
+#
+# Synthesizes single-flood, multi-flood, and bistatic emitter configurations
+# for the smartphone face-scanning detector. The detector origin is fixed
+# to its smartphone-typical position; the emitter origin is free within the
+# allowed placement region.
+
+design_space:
+  # Free emitter origin in [-1, 1] × [-1, 1] × [0, 1] (a relaxed placement
+  # region representing where an external illuminator might be physically
+  # mounted). Azimuth and elevation cover the smartphone's hemisphere of
+  # interest; τ matches the detector's reachable depths.
+  low:  [-1.0, -1.0, 0.0, 2.356, -0.785, 0.1]
+  high: [ 1.0,  1.0, 1.0, 3.927,  0.785, 5.0]
+
+target:
+  sigma: 0.05
+  use_visibility: true
+  visibility_num_samples: 64
+  visibility_beta: 100.0
+  visibility_weight: 1.0
+
+scene:
+  source: outputs/data/faces/train
+  # Optional GPU voxel-SDF cache (sigma=0.05 m here).
+  cache_resolution: 0.01
+  # Detector geometry is treated as the visibility "occluder": rays whose
+  # paths do not reach a detector pixel are penalized.
+  detector_origin: [3.0, 0.0, 0.0]
+
+flow:
+  num_layers: 6
+  circular_dims: [3, 4]
+  spline:
+    num_blocks: 2
+    hidden_channels: 64
+    num_bins: 16
+    tail_bound_multiplier: 1.0
+    activation: ReLU
+    dropout: 0.05
+    permute_mask: true
+    init_identity: true
+
+training:
+  iterations: 10000
+  batch_size: 2048
+  learning_rate: 0.001
+  entropy_reg: 0.5
+  visibility_warmup_iters: null
+
+synthesis:
+  # Fitting a single-flood emitter (1 component), a multi-flood (e.g. 4),
+  # and a bistatic split (2) yield the three emitter design variants.
+  n_components: 4
+  origin_mode: full
+  max_origin_thickness: 0.05
+  em_max_iter: 200
+  em_seed: 0
+  flow_samples: 4096
+
+evaluation:
+  test_scene: outputs/data/faces/test
+
+output:
+  run_dir: outputs/runs/emitter_design/default
+  log_every: 100
+  save_every: 1000
