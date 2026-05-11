@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://nikhilbehari.github.io/implicitlidar/"><b>Project page</b></a>
   &nbsp;·&nbsp;
-  <a href="https://nikhilbehari.github.io/implicitlidar"><b>Paper</b></a>
+  <a href="https://arxiv.org/abs/2505.22344"><b>Paper</b></a>
 </p>
 
 > Behari, N., Young, A., Klinghoffer, T., Dave, A., & Raskar, R.
